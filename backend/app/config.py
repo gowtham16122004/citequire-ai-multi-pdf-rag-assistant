@@ -41,8 +41,8 @@ class Settings(BaseSettings):
     MAX_UPLOAD_SIZE_MB: int = int(os.getenv("MAX_UPLOAD_SIZE_MB", "50"))
 
     # Paths
-    STORAGE_DIR: Path = BACKEND_DIR / "storage"
-    FAISS_INDEX_DIR: Path = BACKEND_DIR / "storage" / "faiss_index"
+    STORAGE_DIR: Path = Path(os.getenv("STORAGE_DIR", str(BACKEND_DIR / "storage")))
+    FAISS_INDEX_DIR: Path = Path(os.getenv("FAISS_INDEX_DIR", str(BACKEND_DIR / "storage" / "faiss_index")))
 
     @property
     def has_google_key(self) -> bool:
@@ -59,5 +59,8 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-# Ensure storage directories exist
-settings.STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+# Ensure storage directories exist (graceful on read-only environments if not configured to /tmp)
+try:
+    settings.STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    pass
