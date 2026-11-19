@@ -1,12 +1,13 @@
-# ⚡ DocuMind AI — Enterprise Multi-PDF Document Intelligence Workspace
+# ⚡ CiteQuire — AI PDF Chat with Page Citations
 
-DocuMind AI is a full-stack, enterprise-grade Retrieval-Augmented Generation (RAG) platform that transforms complex PDF document collections into an interactive, conversational intelligence workspace.
+CiteQuire is a full-stack, enterprise-grade Retrieval-Augmented Generation (RAG) platform that transforms complex PDF document collections into an interactive, conversational intelligence workspace with exact page-level citations.
 
 Built with a high-performance **FastAPI** backend and a **React.js + Vite** single-page application, featuring a clean, premium **white/light theme** with high-contrast typography, subtle glassmorphic elevation, and curated brand accents (**Plus Jakarta Sans**, **Inter**, and royal violet/cyan accents).
 
 ## 🚀 Live Demo
 
-Try DocuMind AI here: [Open DocuMind AI](https://multi-pdf-chatbot-docu-mind-ai.vercel.app/)
+- **CiteQuire Live Deployment**: *Deployment URL pending*
+- **Upstream Demo**: [Open Upstream Live Demo](https://multi-pdf-chatbot-docu-mind-ai.vercel.app/)
 ---
 
 ## 🌟 Key Features
@@ -39,7 +40,7 @@ Try DocuMind AI here: [Open DocuMind AI](https://multi-pdf-chatbot-docu-mind-ai.
 ```mermaid
 flowchart TD
     subgraph Frontend["React.js + Vite (Port 5173)"]
-        UI[DocuMind AI Workspace]
+        UI[CiteQuire Workspace]
         Tabs[Mode Tabs: Chat | Summary | Study | Compare]
         Drawer[Document Management Sidebar & Filter]
         Citations[Clickable Page Citation Chips & Excerpt Popover]
@@ -66,7 +67,7 @@ flowchart TD
 
 ## 🎨 Design System & Color Palette (Light Theme)
 
-DocuMind AI features a clean, high-contrast, premium light aesthetic:
+CiteQuire features a clean, high-contrast, premium light aesthetic:
 
 | Token | Hex / Value | Description |
 |---|---|---|
@@ -92,14 +93,14 @@ DocuMind AI features a clean, high-contrast, premium light aesthetic:
 
 ## 🚦 Gemini 429 Quota Architecture & Diagnostics
 
-DocuMind AI implements intelligent classification and recovery for Google Gemini API limits:
+CiteQuire implements intelligent classification and recovery for Google Gemini API limits:
 
 1. **RPM (Requests Per Minute) Rate Limits**:
    - Google AI Studio free tier limits embedding requests to 15 RPM.
    - Handled via bounded exponential backoff with jitter and automated `Retry-After` parsing (up to 3 attempts).
 2. **RPD (Requests Per Day) Quota Exhaustion**:
    - Google AI Studio free tier limits embedding to 1,500 requests per day.
-   - When daily quota is exhausted, DocuMind AI immediately **fails fast** with a clear message and actionable instructions, avoiding wasted retries or hung requests.
+   - When daily quota is exhausted, CiteQuire immediately **fails fast** with a clear message and actionable instructions, avoiding wasted retries or hung requests.
    - *Resolution*: Wait for daily quota reset at 00:00 UTC (Midnight Pacific Time), switch to pay-as-you-go billing, or configure a fresh API key in `backend/.env`.
 3. **SHA-256 Content-Hash Idempotency**:
    - Documents compute a cryptographic SHA-256 hash upon upload.
@@ -253,7 +254,7 @@ Compiles and bundles the production assets into `frontend/dist/` with zero error
 ## 📁 Project Directory Structure
 
 ```
-multi-pdf-chatbot/
+citequire/
 ├── multipdf_rag.ipynb            # Original reference notebook (retained & untouched)
 ├── README.md                     # Complete project documentation
 ├── DEPLOYMENT.md                 # Production deployment manual (Docker, Render, Vercel)
@@ -284,7 +285,7 @@ multi-pdf-chatbot/
         ├── services/
         │   └── api.js            # Typed API client connecting to FastAPI
         └── components/
-            ├── DocuMindIcon.jsx  # Custom SVG brand identity logo
+            ├── CiteQuireIcon.jsx # Custom SVG brand identity logo
             ├── Header.jsx        # Navbar with mode tabs, model tag, export
             ├── Sidebar.jsx       # Document management drawer with search & delete
             ├── FileUpload.jsx    # Drag-and-drop uploader with 50MB validation

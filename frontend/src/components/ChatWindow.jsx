@@ -7,7 +7,7 @@ import {
   UploadCloud, 
   ArrowRight 
 } from 'lucide-react';
-import { DocuMindIcon } from './DocuMindIcon';
+import { CiteQuireIcon } from './CiteQuireIcon';
 import { MessageBubble } from './MessageBubble';
 
 export const ChatWindow = ({ 
@@ -38,11 +38,11 @@ export const ChatWindow = ({
       {messages.length === 0 ? (
         <div className="welcome-screen">
           <div className="welcome-icon-glow">
-            <DocuMindIcon size={34} />
+            <CiteQuireIcon size={34} />
           </div>
           <h2>Your knowledge, ready to explore.</h2>
           <p>
-            Upload one or more PDF documents in the sidebar. DocuMind extracts page-level text, 
+            Upload one or more PDF documents in the sidebar. CiteQuire extracts page-level text, 
             preserves source citations, vectorizes with Google Gemini, and delivers grounded answers via Groq.
           </p>
 
@@ -106,7 +106,7 @@ export const ChatWindow = ({
       {isLoading && (
         <div className="message-row assistant">
           <div className="avatar bot-avatar">
-            <DocuMindIcon size={20} />
+            <CiteQuireIcon size={20} />
           </div>
           <div className="message-bubble typing-bubble">
             <span className="typing-dot"></span>

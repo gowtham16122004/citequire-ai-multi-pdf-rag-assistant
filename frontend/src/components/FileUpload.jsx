@@ -26,7 +26,7 @@ export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
     // Validate .pdf extension
     const validPdfs = filesArray.filter((f) => f.name.toLowerCase().endsWith('.pdf'));
     if (validPdfs.length < filesArray.length) {
-      setErrorMessage('Non-PDF files were omitted. DocuMind only processes .pdf documents.');
+      setErrorMessage('Non-PDF files were omitted. CiteQuire only processes .pdf documents.');
     }
 
     // Validate size limit (50MB)

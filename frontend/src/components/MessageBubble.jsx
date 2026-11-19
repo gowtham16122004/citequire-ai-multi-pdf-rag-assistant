@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Copy, Check, Bookmark, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { marked } from 'marked';
-import { DocuMindIcon } from './DocuMindIcon';
+import { CiteQuireIcon } from './CiteQuireIcon';
 import { SourceCard } from './SourceCard';
 
 // Configure marked options
@@ -26,7 +26,7 @@ export const MessageBubble = ({ message, index, onFeedback }) => {
   return (
     <div className={`message-row ${isUser ? 'user' : 'assistant'}`}>
       <div className={`avatar ${isUser ? 'user-avatar' : 'bot-avatar'}`}>
-        {isUser ? <User size={17} /> : <DocuMindIcon size={20} />}
+        {isUser ? <User size={17} /> : <CiteQuireIcon size={20} />}
       </div>
 
       <div className="message-bubble">

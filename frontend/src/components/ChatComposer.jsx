@@ -57,7 +57,7 @@ export const ChatComposer = ({ onSendMessage, isLoading, disabled, placeholder }
         </button>
       </form>
       <span className="composer-hint">
-        DocuMind AI grounds answers strictly in verified PDF context with exact page citations.
+        CiteQuire grounds answers strictly in verified PDF context with exact page citations.
       </span>
     </div>
   );

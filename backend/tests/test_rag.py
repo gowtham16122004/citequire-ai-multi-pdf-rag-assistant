@@ -513,7 +513,7 @@ def test_progress_message_and_helpful_error_when_retries_exhausted(capsys):
 
     # Check progress output in stdout
     captured = capsys.readouterr()
-    assert "DocuMind RateLimit" in captured.out
+    assert "CiteQuire RateLimit" in captured.out
     assert "Waiting" in captured.out
 
     # Check error message helpfulness

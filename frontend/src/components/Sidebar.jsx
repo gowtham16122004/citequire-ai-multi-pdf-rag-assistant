@@ -11,7 +11,7 @@ import {
   RefreshCw,
   FolderOpen
 } from 'lucide-react';
-import { DocuMindIcon } from './DocuMindIcon';
+import { CiteQuireIcon } from './CiteQuireIcon';
 import { FileUpload } from './FileUpload';
 
 export const Sidebar = ({ 
@@ -48,10 +48,10 @@ export const Sidebar = ({
         {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="brand-wrapper">
-            <DocuMindIcon size={32} />
+            <CiteQuireIcon size={32} />
             <div className="brand-info">
-              <h1>DocuMind AI</h1>
-              <span>Document Intelligence</span>
+              <h1>CiteQuire</h1>
+              <span>AI PDF Chat with Page Citations</span>
             </div>
           </div>
           {/* Close button on mobile */}

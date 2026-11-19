@@ -1,8 +1,8 @@
 {
-  "name": "multi-pdf-chatbot",
+  "name": "citequire",
   "private": true,
   "version": "2.0.0",
-  "description": "DocuMind AI — Enterprise Multi-PDF Document Intelligence Workspace",
+  "description": "CiteQuire — AI PDF Chat with Page Citations",
   "scripts": {
     "dev": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build",

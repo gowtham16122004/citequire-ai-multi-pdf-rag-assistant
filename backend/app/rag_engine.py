@@ -393,13 +393,13 @@ class RAGEngine:
         missing_indices = [i for i, h in enumerate(text_hashes) if h not in self._chunk_vector_cache]
 
         if not missing_indices:
-            print(f"[DocuMind] All {len(texts)} chunk embeddings retrieved from cache (0 API calls).", flush=True)
+            print(f"[CiteQuire] All {len(texts)} chunk embeddings retrieved from cache (0 API calls).", flush=True)
             return [self._chunk_vector_cache[h] for h in text_hashes]
 
         missing_texts = [texts[i] for i in missing_indices]
         cached_count = len(texts) - len(missing_texts)
         if cached_count > 0:
-            print(f"[DocuMind] Preserved {cached_count}/{len(texts)} previously computed embeddings. Embedding remaining {len(missing_texts)} chunks...", flush=True)
+            print(f"[CiteQuire] Preserved {cached_count}/{len(texts)} previously computed embeddings. Embedding remaining {len(missing_texts)} chunks...", flush=True)
 
         batch_size = max(1, settings.EMBEDDING_BATCH_SIZE)
         max_retries = max(1, settings.EMBEDDING_MAX_RETRIES)
@@ -442,7 +442,7 @@ class RAGEngine:
                                 )
                             last_wait = sleep_time
                             print(
-                                f"[DocuMind RateLimit] Batch {batch_idx + 1}/{total_batches}: HTTP 429 rate limit. "
+                                f"[CiteQuire RateLimit] Batch {batch_idx + 1}/{total_batches}: HTTP 429 rate limit. "
                                 f"Waiting {sleep_time:.1f}s before retry (attempt {attempt + 1}/{max_retries})...",
                                 flush=True
                             )
@@ -673,7 +673,7 @@ class RAGEngine:
                                 settings.EMBEDDING_MAX_BACKOFF,
                                 (settings.EMBEDDING_BASE_BACKOFF * (2 ** attempt)) + random.uniform(0.2, 0.5)
                             )
-                        print(f"[DocuMind RateLimit] Query search 429 rate limit. Waiting {sleep_time:.1f}s before retry (attempt {attempt + 1}/{max_retries})...", flush=True)
+                        print(f"[CiteQuire RateLimit] Query search 429 rate limit. Waiting {sleep_time:.1f}s before retry (attempt {attempt + 1}/{max_retries})...", flush=True)
                         time.sleep(sleep_time)
                         continue
                     elif diag["is_transient"]:
@@ -761,7 +761,7 @@ class RAGEngine:
         if not chat_history_str:
             chat_history_str = "None (First question in this session)."
 
-        prompt_template = """You are DocuMind AI, a senior research analyst and document intelligence assistant.
+        prompt_template = """You are CiteQuire, a senior research analyst and document intelligence assistant.
 
 Answer the question thoroughly, clearly, and concisely using ONLY the verified PDF context provided below.
 Rules:
@@ -871,7 +871,7 @@ Answer:"""
             context_blocks.append(f"[{s} | p.{p}]:\n{doc.page_content}")
 
         context_str = "\n\n".join(context_blocks)
-        prompt = f"""You are DocuMind AI, an executive document intelligence specialist.
+        prompt = f"""You are CiteQuire, an executive document intelligence specialist.
 Read the provided document context below and produce an authoritative, non-repetitive summary with clear factual grounding:
 
 1. Executive Summary: 2-3 concise, high-impact paragraphs summarizing the primary objectives, core findings, and validated outcomes. Distinguish document-supported facts from interpretation or future projections.
@@ -947,7 +947,7 @@ Summary:"""
                 context_blocks.append(f"[Document: {s} | Page: {p}]:\n{doc.page_content}")
 
         context_str = "\n\n---\n\n".join(context_blocks)
-        prompt = f"""You are DocuMind AI, an advanced research intelligence analyst.
+        prompt = f"""You are CiteQuire, an advanced research intelligence analyst.
 Analyze and compare the following documents based strictly on the retrieved context below.
 
 Produce a structured comparative analysis:
@@ -1000,7 +1000,7 @@ Comparison:"""
         context_blocks = [f"[{d[0].metadata.get('source')} | p.{d[0].metadata.get('page')}]:\n{d[0].page_content}" for d in clean_docs]
         context_str = "\n\n".join(context_blocks)
 
-        prompt = f"""You are DocuMind AI. Based on the document context below, create a study revision pack.
+        prompt = f"""You are CiteQuire. Based on the document context below, create a study revision pack.
 Format your output strictly in JSON with this exact schema:
 {{
   "study_notes": "A coherent 2-3 paragraph markdown summary of key principles, definitions, and equations.",

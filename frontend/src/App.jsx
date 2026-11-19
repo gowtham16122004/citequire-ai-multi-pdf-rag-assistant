@@ -66,7 +66,7 @@ export const App = () => {
     } catch (err) {
       const errorMsg = {
         role: 'assistant',
-        content: `⚠️ ${err.message || 'An error occurred while communicating with DocuMind AI.'}`,
+        content: `⚠️ ${err.message || 'An error occurred while communicating with CiteQuire.'}`,
         sources: [],
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -126,12 +126,12 @@ export const App = () => {
   const handleExportChat = () => {
     if (messages.length === 0) return;
 
-    let markdown = `# DocuMind AI — Conversation Export\n\n`;
+    let markdown = `# CiteQuire — Conversation Export\n\n`;
     markdown += `**Export Date:** ${new Date().toLocaleString()}\n`;
     markdown += `**Documents in Knowledge Base:** ${systemStatus?.indexed_files?.join(', ') || 'None'}\n\n---\n\n`;
 
     messages.forEach((m, idx) => {
-      const sender = m.role === 'user' ? '### User' : '### DocuMind AI Assistant';
+      const sender = m.role === 'user' ? '### User' : '### CiteQuire Assistant';
       markdown += `${sender}\n\n${m.content}\n\n`;
       if (m.sources && m.sources.length > 0) {
         markdown += `*Sources Cited:*\n`;
@@ -147,7 +147,7 @@ export const App = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `DocuMind_Conversation_${new Date().toISOString().slice(0, 10)}.md`;
+    link.download = `CiteQuire_Conversation_${new Date().toISOString().slice(0, 10)}.md`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

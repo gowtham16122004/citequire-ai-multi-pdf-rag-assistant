@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const DocuMindIcon = ({ size = 28, className = "" }) => {
+export const CiteQuireIcon = ({ size = 28, className = "" }) => {
   return (
     <svg 
       width={size} 
@@ -11,7 +11,7 @@ export const DocuMindIcon = ({ size = 28, className = "" }) => {
       className={className}
     >
       <defs>
-        <linearGradient id="docuGrad" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
+        <linearGradient id="citeGrad" x1="2" y1="2" x2="30" y2="30" gradientUnits="userSpaceOnUse">
           <stop stopColor="#6D5AE6" />
           <stop offset="0.6" stopColor="#5844D6" />
           <stop offset="1" stopColor="#0891B2" />
@@ -22,7 +22,7 @@ export const DocuMindIcon = ({ size = 28, className = "" }) => {
         </linearGradient>
       </defs>
       {/* Outer rounded container with subtle glow */}
-      <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#docuGrad)" />
+      <rect x="2" y="2" width="28" height="28" rx="8" fill="url(#citeGrad)" />
       {/* Document Silhouette */}
       <path 
         d="M9 8C9 7.44772 9.44772 7 10 7H18L23 12V23C23 23.5523 22.5523 24 22 24H10C9.44772 24 9 23.5523 9 23V8Z" 

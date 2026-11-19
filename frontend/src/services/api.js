@@ -1,9 +1,9 @@
 /**
- * DocuMind AI — API Client Service
+ * CiteQuire — API Client Service
  * Centralized service connecting React frontend to the FastAPI RAG backend.
  */
 
-// Read base URL from Vite environment variable (e.g. VITE_API_BASE_URL=https://multi-pdf-chatbot-documind-ai.onrender.com)
+// Read base URL from Vite environment variable (e.g. VITE_API_BASE_URL=https://api.citequire.example.com)
 // If unset or empty, defaults to '/api' which Vite proxies to localhost:8000 during local dev
 const RAW_BASE = (import.meta.env.VITE_API_BASE_URL || '').trim();
 const cleanBase = RAW_BASE.replace(/\/+$/, '');

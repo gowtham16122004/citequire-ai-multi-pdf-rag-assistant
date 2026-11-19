@@ -1,6 +1,6 @@
-# DocuMind AI — Production Deployment & Operations Guide
+# CiteQuire — Production Deployment & Operations Guide
 
-This document provides complete instructions for configuring, operating, and deploying **DocuMind AI** in production environments.
+This document provides complete instructions for configuring, operating, and deploying **CiteQuire** in production environments.
 
 ---
 
@@ -39,7 +39,7 @@ This document provides complete instructions for configuring, operating, and dep
 
 | Variable | Type | Default | Description |
 |---|---|---|---|
-| `VITE_API_BASE_URL` | String | `""` (Empty) | Base URL of the backend API (e.g., `https://api.documind.example.com`). In local dev, leave blank to use the Vite reverse proxy. |
+| `VITE_API_BASE_URL` | String | `""` (Empty) | Base URL of the backend API (e.g., `https://api.citequire.example.com`). In local dev, leave blank to use the Vite reverse proxy. |
 
 > [!SECURITY NOTE]
 > Never prefix backend API keys with `VITE_`. All Gemini and Groq API calls execute strictly on the backend to avoid secret leakage in client-side bundles.

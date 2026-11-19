@@ -11,7 +11,7 @@ import {
   ShieldCheck, 
   AlertCircle 
 } from 'lucide-react';
-import { DocuMindIcon } from './DocuMindIcon';
+import { CiteQuireIcon } from './CiteQuireIcon';
 
 export const Header = ({ 
   activeMode, 
@@ -41,9 +41,9 @@ export const Header = ({
 
         {/* Brand identity on Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <DocuMindIcon size={26} />
+          <CiteQuireIcon size={26} />
           <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>
-            DocuMind AI
+            CiteQuire
           </span>
         </div>
 
@@ -103,7 +103,7 @@ export const Header = ({
 
         {/* Backend Status Pill */}
         {systemStatus === null ? (
-          <div className="status-pill warning" title="Connecting to DocuMind backend...">
+          <div className="status-pill warning" title="Connecting to CiteQuire backend...">
             <span className="status-dot"></span>
             <span>Connecting...</span>
           </div>

@@ -32,7 +32,7 @@ from app.rag_engine import (
 )
 
 app = FastAPI(
-    title="DocuMind AI — Intelligent Multi-PDF RAG Engine",
+    title="CiteQuire — Intelligent Multi-PDF RAG Engine",
     description="Enterprise Document Intelligence API powered by PyPDF, LangChain, Google Gemini, FAISS, and Groq",
     version="2.0.0"
 )
@@ -67,7 +67,7 @@ else:
 def health_check():
     return {
         "status": "healthy",
-        "service": "DocuMind AI Workspace Engine",
+        "service": "CiteQuire Workspace Engine",
         "version": "2.0.0"
     }
 
@@ -130,7 +130,7 @@ async def upload_pdfs(files: List[UploadFile] = File(...)):
         if not safe_filename.lower().endswith(".pdf"):
             raise HTTPException(
                 status_code=400,
-                detail=f"Unsupported format for '{file.filename}'. DocuMind only processes .pdf documents."
+                detail=f"Unsupported format for '{file.filename}'. CiteQuire only processes .pdf documents."
             )
         try:
             content = await file.read()
