@@ -1,8 +1,62 @@
-import React, { useState, useRef } from 'react';
-import { UploadCloud, FileText, Trash2, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { Upload, FileText, FileCheck, FileSpreadsheet, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { apiService } from '../services/api';
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+const ICON_TRANSFORMS = [
+  {
+    idle: 'translate(-78%, -50%) rotate(-8deg)',
+    active: 'translate(-114%, -50%) rotate(-12deg) scale(1.08)',
+  },
+  {
+    idle: 'translate(-50%, -50%) rotate(0deg)',
+    active: 'translate(-50%, -50%) rotate(0deg) scale(1.18)',
+  },
+  {
+    idle: 'translate(-22%, -50%) rotate(8deg)',
+    active: 'translate(14%, -50%) rotate(12deg) scale(1.08)',
+  },
+];
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1
+  );
+  return `${(bytes / 1024 ** index).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function UploadIconCluster({ isDragging }) {
+  const icons = [
+    { label: 'Doc', icon: FileText },
+    { label: 'PDF', icon: FileCheck },
+    { label: 'Data', icon: FileSpreadsheet },
+  ];
+
+  return (
+    <div className="upload-icon-cluster">
+      {icons.map((item, index) => {
+        const IconComponent = item.icon;
+        return (
+          <div
+            key={item.label}
+            className={`cluster-card cluster-card-${index} ${index === 1 ? 'z-center' : ''} ${isDragging ? 'is-dragging' : ''}`}
+            style={{
+              transform: isDragging
+                ? ICON_TRANSFORMS[index]?.active
+                : ICON_TRANSFORMS[index]?.idle,
+            }}
+          >
+            <IconComponent size={17} />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -10,23 +64,18 @@ export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const dragDepthRef = useRef(0);
   const fileInputRef = useRef(null);
 
-  const formatFileSize = (bytes) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const handleFileSelection = (newFiles) => {
+  const handleFileSelection = useCallback((newFiles) => {
     setErrorMessage(null);
     setStatusMessage(null);
     const filesArray = Array.from(newFiles);
 
-    // Validate .pdf extension
+    // Validate .pdf extension (Strict CiteQuire Backend Constraint)
     const validPdfs = filesArray.filter((f) => f.name.toLowerCase().endsWith('.pdf'));
     if (validPdfs.length < filesArray.length) {
-      setErrorMessage('Non-PDF files were omitted. CiteQuire only processes .pdf documents.');
+      setErrorMessage('Non-PDF files omitted. CiteQuire only processes .pdf documents.');
     }
 
     // Validate size limit (50MB)
@@ -43,7 +92,7 @@ export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
       const additions = eligible.filter((f) => !existingNames.has(f.name));
       return [...prev, ...additions];
     });
-  };
+  }, []);
 
   const removeFile = (nameToRemove) => {
     setSelectedFiles((prev) => prev.filter((f) => f.name !== nameToRemove));
@@ -51,10 +100,29 @@ export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
 
   const handleDrop = (e) => {
     e.preventDefault();
+    dragDepthRef.current = 0;
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       handleFileSelection(e.dataTransfer.files);
     }
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    dragDepthRef.current += 1;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+    if (dragDepthRef.current === 0) {
+      setIsDragging(false);
+    }
+  };
+
+  const openFileDialog = () => {
+    fileInputRef.current?.click();
   };
 
   const handleUploadAndProcess = async () => {
@@ -78,116 +146,135 @@ export const FileUpload = ({ onUploadSuccess, systemStatus }) => {
   };
 
   return (
-    <div className="upload-card">
-      <div 
-        className={`drop-zone ${isDragging ? 'dragover' : ''}`}
-        tabIndex={0}
-        role="button"
-        aria-label="Upload PDF documents"
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-        onDragLeave={() => setIsDragging(false)}
-        onDrop={handleDrop}
-        onClick={() => fileInputRef.current?.click()}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            fileInputRef.current?.click();
-          }
-        }}
-      >
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          style={{ display: 'none' }} 
-          multiple 
-          accept=".pdf,application/pdf"
-          onChange={(e) => {
-            if (e.target.files) handleFileSelection(e.target.files);
+    <div className="reference-upload-wrapper">
+      {/* Outer BorderBeam Box */}
+      <div className={`beam-container ${isDragging ? 'beam-active' : ''}`}>
+        <div
+          role="button"
+          tabIndex={0}
+          className={`reference-dropzone ${isDragging ? 'is-dragging' : ''}`}
+          onClick={openFileDialog}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDrop}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              openFileDialog();
+            }
           }}
-        />
-        <div className="drop-icon-wrapper">
-          <UploadCloud size={22} />
+          aria-label="Upload PDF documents"
+        >
+          {/* Centered Stacked File Icon Cluster with Dynamic Transforms */}
+          <UploadIconCluster isDragging={isDragging} />
+
+          {/* Centered Instructions */}
+          <div className="dropzone-text-block">
+            <span className="dropzone-title">Click to upload or drop files</span>
+            <span className="dropzone-description">PDF documents (up to 50MB)</span>
+          </div>
+
+          {/* Small Pill-Shaped Browse Files Button */}
+          <div className="browse-pill-button">
+            <Upload size={12} className="browse-pill-icon" />
+            <span>{isDragging ? 'Drop to add' : 'Browse files'}</span>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,application/pdf"
+            multiple
+            style={{ display: 'none' }}
+            onChange={(e) => {
+              if (e.target.files) {
+                handleFileSelection(e.target.files);
+                e.currentTarget.value = '';
+              }
+            }}
+          />
         </div>
-        <p className="drop-title">Drop PDF documents here</p>
-        <span className="drop-sub">or click to browse from device (up to 50MB)</span>
       </div>
 
-      {/* Selected file queue */}
+      {/* Staged File List (Reference Style) */}
       {selectedFiles.length > 0 && (
-        <div style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-            QUEUE ({selectedFiles.length} file{selectedFiles.length > 1 ? 's' : ''})
-          </span>
-          <div style={{ maxHeight: '120px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div className="staged-files-panel">
+          <div className="staged-header">
+            <span>Staged ({selectedFiles.length})</span>
+            <button
+              type="button"
+              className="staged-clear-btn"
+              onClick={() => setSelectedFiles([])}
+            >
+              Clear
+            </button>
+          </div>
+
+          <div className="staged-list">
             {selectedFiles.map((file) => (
-              <div key={file.name} className="doc-card" style={{ padding: '6px 10px' }}>
-                <div className="doc-card-info">
-                  <FileText size={15} color="var(--accent-primary)" />
-                  <span className="doc-card-name" style={{ fontSize: '0.78rem', maxWidth: '170px' }} title={file.name}>
+              <div key={file.name} className="staged-row">
+                <div className="staged-thumb">
+                  <FileText size={15} />
+                </div>
+                <div className="staged-info">
+                  <span className="staged-name" title={file.name}>
                     {file.name}
                   </span>
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                    ({formatFileSize(file.size)})
+                  <span className="staged-meta">
+                    PDF &bull; {formatBytes(file.size)}
                   </span>
                 </div>
-                <button 
+                <div className="staged-badge">Ready</div>
+                <button
                   type="button"
-                  className="doc-delete-btn" 
+                  className="staged-remove-btn"
                   onClick={() => removeFile(file.name)}
-                  title="Remove from queue"
+                  title="Remove file"
+                  aria-label={`Remove ${file.name}`}
                 >
-                  <Trash2 size={13} />
+                  <X size={12} />
                 </button>
               </div>
             ))}
           </div>
+
+          {/* Process PDFs Action Button */}
+          <button
+            type="button"
+            className="btn-primary btn-process-pdfs"
+            onClick={handleUploadAndProcess}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <>
+                <Loader2 size={14} className="spinner" />
+                <span>Indexing {selectedFiles.length} PDF{selectedFiles.length > 1 ? 's' : ''}...</span>
+              </>
+            ) : (
+              <span>Process {selectedFiles.length} Document{selectedFiles.length > 1 ? 's' : ''}</span>
+            )}
+          </button>
         </div>
       )}
 
-      {/* Action Button */}
-      <button 
-        type="button"
-        className="btn-primary" 
-        style={{ width: '100%', marginTop: '12px' }}
-        onClick={handleUploadAndProcess}
-        disabled={selectedFiles.length === 0 || isUploading}
-      >
-        {isUploading ? (
-          <>
-            <Loader2 size={16} className="animate-spin" />
-            <span>Embedding & Indexing...</span>
-          </>
-        ) : (
-          <span>Process {selectedFiles.length > 0 ? `${selectedFiles.length} Document(s)` : 'PDFs'}</span>
-        )}
-      </button>
-
-      {/* Status or Error Notifications */}
+      {/* Success Notification */}
       {statusMessage && (
-        <div style={{ marginTop: '10px', display: 'flex', gap: '6px', alignItems: 'center', fontSize: '0.76rem', color: 'var(--status-success)' }}>
-          <CheckCircle2 size={15} style={{ flexShrink: 0 }} />
+        <div className="upload-alert success">
+          <CheckCircle2 size={13} className="alert-icon" />
           <span>{statusMessage}</span>
         </div>
       )}
 
+      {/* Error Notification */}
       {errorMessage && (
-        <div style={{
-          marginTop: '10px',
-          display: 'flex',
-          gap: '8px',
-          alignItems: 'flex-start',
-          fontSize: '0.78rem',
-          lineHeight: '1.45',
-          color: '#991B1B',
-          background: '#FEF2F2',
-          border: '1px solid #FECACA',
-          padding: '9px 12px',
-          borderRadius: '8px'
-        }}>
-          <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px', color: '#DC2626' }} />
+        <div className="upload-alert error">
+          <AlertCircle size={13} className="alert-icon" />
           <span>{errorMessage}</span>
         </div>
       )}
     </div>
   );
 };
+
+export default FileUpload;

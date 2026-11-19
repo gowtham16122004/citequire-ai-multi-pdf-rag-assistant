@@ -3,20 +3,20 @@ import {
   FileText, 
   Trash2, 
   Search, 
-  Layers, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Key, 
   X, 
-  RefreshCw,
-  FolderOpen
+  PanelLeftClose,
+  FolderOpen,
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 import { CiteQuireIcon } from './CiteQuireIcon';
 import { FileUpload } from './FileUpload';
 
 export const Sidebar = ({ 
   isOpen, 
+  isCollapsed,
   onClose, 
+  onToggleCollapse,
   systemStatus, 
   onUploadSuccess, 
   onDeleteDocument, 
@@ -44,25 +44,37 @@ export const Sidebar = ({
       {/* Mobile backdrop */}
       {isOpen && <div className="mobile-overlay" onClick={onClose} />}
 
-      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <aside className={`sidebar ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
         {/* Sidebar Header */}
         <div className="sidebar-header">
           <div className="brand-wrapper">
-            <CiteQuireIcon size={32} />
+            <CiteQuireIcon size={22} />
             <div className="brand-info">
-              <h1>CiteQuire</h1>
-              <span>AI PDF Chat with Page Citations</span>
+              <span className="brand-name">CiteQuire</span>
+              <span className="brand-badge">PDF RAG</span>
             </div>
           </div>
-          {/* Close button on mobile */}
+
+          {/* Desktop collapse button */}
           <button 
             type="button" 
-            className="btn-ghost" 
-            onClick={onClose} 
-            style={{ display: isOpen ? 'flex' : 'none' }}
-            title="Close Sidebar"
+            className="btn-icon desktop-only" 
+            onClick={onToggleCollapse}
+            title="Collapse sidebar"
+            aria-label="Collapse sidebar"
           >
-            <X size={18} />
+            <PanelLeftClose size={15} />
+          </button>
+
+          {/* Mobile close button */}
+          <button 
+            type="button" 
+            className="btn-icon mobile-only" 
+            onClick={onClose} 
+            title="Close sidebar"
+            aria-label="Close sidebar"
+          >
+            <X size={16} />
           </button>
         </div>
 
@@ -73,143 +85,106 @@ export const Sidebar = ({
             systemStatus={systemStatus} 
           />
 
-          {/* Documents Section Header & Search */}
-          <div style={{ marginTop: '4px' }}>
-            <div className="documents-section-title">
-              <span>Your Documents ({documents.length})</span>
+          {/* Documents Section */}
+          <div className="sidebar-section">
+            <div className="section-header">
+              <span className="section-title">Documents</span>
+              <span className="section-count">{documents.length}</span>
             </div>
 
             {hasDocuments && (
               <div className="doc-search-bar">
-                <Search size={14} color="var(--text-muted)" />
+                <Search size={13} className="search-icon" />
                 <input
                   type="text"
                   placeholder="Filter documents..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Filter documents"
                 />
-              </div>
-            )}
-          </div>
-
-          {/* Active Documents List */}
-          <div className="document-list">
-            {filteredDocs.length > 0 ? (
-              filteredDocs.map((doc) => (
-                <div key={doc.filename} className="doc-card">
-                  <div className="doc-card-info">
-                    <FileText size={18} className="doc-card-icon" />
-                    <div className="doc-card-details">
-                      <span className="doc-card-name" title={doc.filename}>
-                        {doc.filename}
-                      </span>
-                      <span className="doc-card-meta">
-                        <span>{doc.pages} pg</span> &bull; 
-                        <span>{doc.chunks} chk</span> &bull; 
-                        <span>{formatFileSize(doc.size_bytes)}</span>
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    className="doc-delete-btn"
-                    onClick={() => onDeleteDocument(doc.filename)}
-                    title={`Remove '${doc.filename}'`}
+                {searchQuery && (
+                  <button 
+                    type="button" 
+                    className="search-clear-btn"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear filter"
                   >
-                    <Trash2 size={14} />
+                    <X size={12} />
                   </button>
-                </div>
-              ))
-            ) : hasDocuments && searchQuery ? (
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'center', padding: '12px' }}>
-                No documents match "{searchQuery}"
-              </p>
-            ) : (
-              <div style={{ padding: '16px 12px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                <FolderOpen size={24} style={{ margin: '0 auto 6px auto', display: 'block', opacity: 0.5 }} />
-                <span style={{ fontSize: '0.78rem' }}>No PDFs uploaded yet</span>
+                )}
               </div>
             )}
-          </div>
 
-          {/* Knowledge & Vector Stats Card */}
-          <div className="stats-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', fontWeight: 600 }}>
-                Indexed Knowledge
-              </span>
-              <span className={`status-pill ${hasDocuments ? 'ready' : 'awaiting'}`}>
-                {hasDocuments ? `${systemStatus?.total_chunks || 0} chunks` : 'Empty'}
-              </span>
-            </div>
-
-            <div className="stats-grid">
-              <div className="stat-box">
-                <div className="stat-label">Documents</div>
-                <div className="stat-val">{documents.length}</div>
-              </div>
-              <div className="stat-box">
-                <div className="stat-label">Vector Chunks</div>
-                <div className="stat-val">{systemStatus?.total_chunks || 0}</div>
-              </div>
-            </div>
-
-            {/* Backend Connectivity Status */}
-            <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px', marginTop: '4px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-                  PROVIDER STATUS
-                </span>
-                <Key size={13} color="var(--text-muted)" />
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.74rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Gemini Embeddings</span>
-                  {systemStatus === null ? (
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Checking...</span>
-                  ) : systemStatus?.has_google_key ? (
-                    <span style={{ color: 'var(--status-success)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CheckCircle2 size={12} /> Active
-                    </span>
-                  ) : (
-                    <span style={{ color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <AlertTriangle size={12} /> Missing
-                    </span>
-                  )}
+            {/* Active Documents List */}
+            <div className="document-list">
+              {filteredDocs.length > 0 ? (
+                filteredDocs.map((doc) => (
+                  <div key={doc.filename} className="doc-item">
+                    <div className="doc-item-main">
+                      <div className="doc-status-dot" title="Indexed in vector store" />
+                      <div className="doc-item-details">
+                        <span className="doc-item-name" title={doc.filename}>
+                          {doc.filename}
+                        </span>
+                        <div className="doc-item-meta">
+                          <span>{doc.pages} pg</span>
+                          <span>&bull;</span>
+                          <span>{doc.chunks} chk</span>
+                          <span>&bull;</span>
+                          <span>{formatFileSize(doc.size_bytes)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="doc-delete-btn"
+                      onClick={() => onDeleteDocument(doc.filename)}
+                      title={`Remove '${doc.filename}'`}
+                      aria-label={`Remove '${doc.filename}'`}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))
+              ) : hasDocuments && searchQuery ? (
+                <div className="empty-subtext">No documents match filter</div>
+              ) : (
+                <div className="sidebar-empty-state">
+                  <FolderOpen size={20} className="empty-icon" />
+                  <span>No PDFs uploaded yet</span>
                 </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.74rem' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Groq LLM</span>
-                  {systemStatus === null ? (
-                    <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem' }}>Checking...</span>
-                  ) : systemStatus?.has_groq_key ? (
-                    <span style={{ color: 'var(--status-success)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <CheckCircle2 size={12} /> Active
-                    </span>
-                  ) : (
-                    <span style={{ color: 'var(--status-warning)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <AlertTriangle size={12} /> Missing
-                    </span>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* Wipe All Knowledge Base Action */}
-            {hasDocuments && (
-              <button
-                type="button"
-                className="btn-ghost"
-                onClick={onWipeAll}
-                style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '4px', width: '100%', justifyContent: 'center' }}
-                title="Wipe all uploaded documents and reset FAISS index"
-              >
-                <Trash2 size={12} style={{ marginRight: '4px' }} />
-                <span>Reset All Documents</span>
-              </button>
-            )}
           </div>
+        </div>
+
+        {/* Sidebar Footer: Consolidated Status & Knowledge Control */}
+        <div className="sidebar-footer">
+          {!hasKeys ? (
+            <div className="sidebar-warning-banner">
+              <AlertTriangle size={13} />
+              <span>API keys needed in backend/.env</span>
+            </div>
+          ) : (
+            <div className="sidebar-status-line">
+              <span className="status-dot online"></span>
+              <span className="status-text">
+                {documents.length} doc{documents.length === 1 ? '' : 's'} &bull; {systemStatus?.total_chunks || 0} chunks indexed
+              </span>
+            </div>
+          )}
+
+          {hasDocuments && (
+            <button
+              type="button"
+              className="btn-wipe"
+              onClick={onWipeAll}
+              title="Reset all documents and vector index"
+            >
+              <RotateCcw size={11} />
+              <span>Reset Knowledge Base</span>
+            </button>
+          )}
         </div>
       </aside>
     </>

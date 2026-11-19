@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiService } from './services/api';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
-import { ChatWindow } from './components/ChatWindow';
-import { ChatComposer } from './components/ChatComposer';
+import { CitedAnswerChatInput } from './components/CitedAnswerChatInput';
 import { SummaryView } from './components/SummaryView';
 import { StudyModeView } from './components/StudyModeView';
 import { CompareView } from './components/CompareView';
@@ -14,6 +13,7 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [systemStatus, setSystemStatus] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const sessionId = 'default';
 
   const refreshStatus = async (retryIfFailed = false) => {
@@ -157,12 +157,22 @@ export const App = () => {
   const documents = systemStatus?.documents || [];
   const hasDocuments = (systemStatus?.total_chunks || 0) > 0;
 
+  const handleToggleSidebar = () => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 900) {
+      setSidebarOpen((prev) => !prev);
+    } else {
+      setSidebarCollapsed((prev) => !prev);
+    }
+  };
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Document Management Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
+        isCollapsed={sidebarCollapsed}
         onClose={() => setSidebarOpen(false)}
+        onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
         systemStatus={systemStatus}
         onUploadSuccess={refreshStatus}
         onDeleteDocument={handleDeleteDocument}
@@ -177,31 +187,36 @@ export const App = () => {
           systemStatus={systemStatus}
           onNewConversation={handleNewConversation}
           onExportChat={handleExportChat}
-          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
+          onToggleSidebar={handleToggleSidebar}
+          isSidebarCollapsed={sidebarCollapsed}
           hasMessages={messages.length > 0}
         />
 
         {/* Dynamic Mode Switcher Views */}
         {activeMode === 'chat' && (
-          <>
-            <ChatWindow
+          <div className="chat-layout-wrapper">
+            <CitedAnswerChatInput
               messages={messages}
               isLoading={isLoading}
-              onSelectSuggested={handleSendMessage}
-              hasDocuments={hasDocuments}
-              onOpenUpload={() => setSidebarOpen(true)}
-            />
-            <ChatComposer
               onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              disabled={!hasDocuments}
+              onFeedback={handleFeedback}
+              hasDocuments={hasDocuments}
+              systemStatus={systemStatus}
+              documents={documents}
+              onOpenUpload={() => {
+                if (window.innerWidth <= 900) {
+                  setSidebarOpen(true);
+                } else if (sidebarCollapsed) {
+                  setSidebarCollapsed(false);
+                }
+              }}
               placeholder={
                 !hasDocuments
-                  ? "Upload PDF documents to begin conversational QA..."
-                  : "Ask a question (e.g. 'What are the main findings and conclusions?')..."
+                  ? "Upload PDF documents in the sidebar to begin..."
+                  : "Ask anything about your documents..."
               }
             />
-          </>
+          </div>
         )}
 
         {activeMode === 'summary' && (

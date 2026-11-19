@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FileText, X, BookOpen, Quote } from 'lucide-react';
 
-export const SourceCard = ({ citation }) => {
+export const SourceCard = ({ citation, index }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -11,48 +11,50 @@ export const SourceCard = ({ citation }) => {
         className="citation-chip" 
         onClick={() => setIsOpen(true)}
         title={`View context excerpt from ${citation.source} (Page ${citation.page})`}
+        aria-label={`View context excerpt from ${citation.source} (Page ${citation.page})`}
       >
-        <FileText size={12} />
-        <span className="file-name" style={{ maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {citation.source}
-        </span>
-        <span className="page-badge">p. {citation.page}</span>
+        <span className="citation-num">[{index || 1}]</span>
+        <span className="citation-filename">{citation.source}</span>
+        <span className="citation-divider">&bull;</span>
+        <span className="citation-page">p.{citation.page}</span>
       </button>
 
       {isOpen && (
         <div className="snippet-modal-overlay" onClick={() => setIsOpen(false)}>
           <div className="snippet-modal" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-              <h4 style={{ fontSize: '0.96rem', fontFamily: 'var(--font-heading)', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-                <BookOpen size={17} color="var(--accent-primary)" />
-                <span>{citation.source} &bull; Page {citation.page}</span>
-              </h4>
+            <div className="snippet-modal-header">
+              <div className="snippet-title-group">
+                <BookOpen size={16} className="snippet-header-icon" />
+                <span className="snippet-title">{citation.source}</span>
+                <span className="snippet-page-tag">Page {citation.page}</span>
+              </div>
               <button 
                 type="button"
-                className="btn-ghost" 
+                className="btn-icon" 
                 onClick={() => setIsOpen(false)}
                 title="Close excerpt preview"
+                aria-label="Close excerpt preview"
               >
-                <X size={18} />
+                <X size={15} />
               </button>
             </div>
             
-            <p style={{ fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div className="snippet-label-row">
               <Quote size={12} />
               <span>Verified PDF Chunk Excerpt</span>
-            </p>
+            </div>
 
             <div className="snippet-body">
               {citation.snippet}
             </div>
 
-            <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="snippet-modal-footer">
               <button 
                 type="button"
-                className="btn-secondary" 
+                className="btn-secondary btn-sm" 
                 onClick={() => setIsOpen(false)}
               >
-                Close Preview
+                Close
               </button>
             </div>
           </div>

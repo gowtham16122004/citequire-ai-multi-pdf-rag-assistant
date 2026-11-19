@@ -1,0 +1,162 @@
+/* ==========================================================================
+   CiteQuire — Vercel-Inspired Design Tokens
+   Monochrome precision: #FAFAFA canvas, #FFFFFF surfaces, #171717 text & CTA,
+   subtle hairline borders (#EBEBEB / #E6E6E6), Geist typography, 4px grid
+   ========================================================================== */
+
+:root {
+  /* --------------------------------------------------------------------------
+     1. Monochromatic Color System (Vercel Spec)
+     -------------------------------------------------------------------------- */
+  --canvas: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-hover: #F5F5F5;
+  --surface-active: #EBEBEB;
+  --surface-muted: #F5F5F5;
+
+  /* Text Colors */
+  --text-primary: #171717;      /* Primary text: strong contrast */
+  --text-secondary: #4D4D4D;    /* Secondary text: descriptions & metadata */
+  --text-muted: #8F8F8F;        /* Muted text: captions, dates, counters */
+  --text-disabled: #A3A3A3;
+
+  /* Borders & Dividers */
+  --border-subtle: #EBEBEB;     /* Inner borders, cards, table dividers */
+  --border-strong: #E6E6E6;     /* Structural panel borders, outer bounds */
+  --border-hover: #D4D4D4;
+
+  /* Action Surfaces */
+  --btn-primary-bg: #171717;    /* Vercel black CTA */
+  --btn-primary-text: #FFFFFF;
+  --btn-primary-hover: #262626;
+
+  --btn-secondary-bg: #FFFFFF;
+  --btn-secondary-text: #171717;
+  --btn-secondary-border: #EBEBEB;
+  --btn-secondary-hover: #F5F5F5;
+
+  /* Functional Accents */
+  --accent-blue: #0070F3;       /* Vercel interactive blue (used sparingly) */
+  --brand-purple: #6D5AE6;      /* CiteQuire identity mark */
+  --brand-purple-light: #F5F3FF;
+  --brand-purple-border: #DDD6FE;
+
+  /* Status Colors (Subtle & clean) */
+  --status-success: #16A34A;
+  --status-success-bg: #F0FDF4;
+  --status-success-border: #BBF7D0;
+
+  --status-warning: #D97706;
+  --status-warning-bg: #FFFBEB;
+  --status-warning-border: #FDE68A;
+
+  --status-error: #DC2626;
+  --status-error-bg: #FEF2F2;
+  --status-error-border: #FECACA;
+
+  --status-info: #0070F3;
+  --status-info-bg: #EFF6FF;
+  --status-info-border: #BFDBFE;
+
+  /* --------------------------------------------------------------------------
+     2. Typography (Geist Sans & Geist Mono)
+     -------------------------------------------------------------------------- */
+  --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --text-xs: 0.75rem;     /* 12px - metadata, tags, counters */
+  --text-sm: 0.8125rem;   /* 13px - navigation, buttons, small labels */
+  --text-base: 0.875rem;  /* 14px - main body text, chat responses */
+  --text-md: 1rem;        /* 16px - section headings */
+  --text-lg: 1.25rem;     /* 20px - page titles */
+  --text-xl: 1.5rem;      /* 24px - prominent titles */
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+
+  /* --------------------------------------------------------------------------
+     3. Spacing Grid (4px base)
+     -------------------------------------------------------------------------- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* --------------------------------------------------------------------------
+     4. Radii & Shadows (Clean, restrained)
+     -------------------------------------------------------------------------- */
+  --radius-xs: 4px;
+  --radius-sm: 6px;       /* Controls, buttons, inputs, pills */
+  --radius-md: 8px;       /* Cards, dialogs, composer */
+  --radius-lg: 10px;      /* Main panels */
+  --radius-full: 9999px;  /* Pills, round avatars */
+
+  --shadow-1: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-2: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+
+  --focus-ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--text-primary);
+
+  /* --------------------------------------------------------------------------
+     5. Layout & Breakpoints
+     -------------------------------------------------------------------------- */
+  --sidebar-width: 260px;
+  --chat-max-width: 720px;
+  --source-panel-width: 360px;
+
+  --bp-sm: 640px;
+  --bp-md: 900px;
+  --bp-lg: 1280px;
+
+  /* --------------------------------------------------------------------------
+     6. Backward-Compatibility Aliases
+     -------------------------------------------------------------------------- */
+  --bg-primary: var(--canvas);
+  --bg-secondary: var(--surface);
+  --surface-primary: var(--surface);
+  --surface-elevated: var(--surface-muted);
+  --surface-hover: var(--surface-hover);
+  --surface-card: var(--surface);
+
+  --accent: var(--brand-purple);
+  --accent-primary: var(--brand-purple);
+  --accent-primary-hover: #5844D6;
+  --accent-primary-light: var(--brand-purple-light);
+  --accent-secondary: var(--text-primary);
+  --accent-secondary-light: var(--surface-muted);
+  --accent-gradient: var(--brand-purple);
+  --accent-glow: none;
+
+  --border-active: var(--text-primary);
+  --border-focus: var(--text-primary);
+
+  --shadow-subtle: var(--shadow-1);
+  --shadow-card: var(--shadow-1);
+  --shadow-elevated: var(--shadow-2);
+
+  --font-heading: var(--font-sans);
+  --font-body: var(--font-sans);
+  --font-code: var(--font-mono);
+}
+
+/* ==========================================================================
+   Accessibility & Reduced Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

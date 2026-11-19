@@ -1,95 +1,85 @@
-import React, { useEffect, useRef } from 'react';
-import { 
-  Sparkles, 
-  FileSearch, 
-  Layers, 
-  MessageSquareQuote, 
-  UploadCloud, 
-  ArrowRight 
-} from 'lucide-react';
+﻿import React, { useEffect, useRef } from 'react';
+import { Sparkles, UploadCloud } from 'lucide-react';
 import { CiteQuireIcon } from './CiteQuireIcon';
 import { MessageBubble } from './MessageBubble';
 
-export const ChatWindow = ({ 
-  messages, 
-  isLoading, 
-  onSelectSuggested, 
-  hasDocuments, 
-  onOpenUpload 
+function ReadingSourcesIndicator() {
+  return (
+    <div className="reading-indicator" role="status" aria-live="polite" aria-label="CiteQuire is reading your documents">
+      <div className="reading-indicator__avatar">
+        <CiteQuireIcon size={14} />
+      </div>
+      <div className="reading-indicator__body">
+        <div className="reading-indicator__label">
+          <span className="reading-indicator__dot" aria-hidden="true" />
+          <span className="reading-indicator__dot" aria-hidden="true" />
+          <span className="reading-indicator__dot" aria-hidden="true" />
+          <span className="reading-indicator__text">Reading sources</span>
+        </div>
+        <div className="reading-indicator__bars" aria-hidden="true">
+          <div className="reading-bar reading-bar--a" />
+          <div className="reading-bar reading-bar--b" />
+          <div className="reading-bar reading-bar--c" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export const ChatWindow = ({
+  messages,
+  isLoading,
+  onSelectSuggested,
+  onFeedback,
+  hasDocuments,
+  onOpenUpload,
 }) => {
   const scrollEndRef = useRef(null);
 
-  const scrollToBottom = () => {
-    scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    scrollEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
   const sampleQuestions = [
-    "What are the core arguments and conclusions across these documents?",
-    "Explain any specific laws, formulas, or theorems cited.",
-    "Are there any conflicting findings or recommendations mentioned?",
+    'What are the core arguments and conclusions?',
+    'Explain any laws, formulas, or theorems cited.',
+    'Are there conflicting findings or recommendations?',
   ];
 
   return (
     <div className="messages-container">
       {messages.length === 0 ? (
-        <div className="welcome-screen">
-          <div className="welcome-icon-glow">
-            <CiteQuireIcon size={34} />
+        <div className="empty-workspace">
+          <div className="empty-workspace-badge">
+            <CiteQuireIcon size={22} />
           </div>
-          <h2>Your knowledge, ready to explore.</h2>
-          <p>
-            Upload one or more PDF documents in the sidebar. CiteQuire extracts page-level text, 
-            preserves source citations, vectorizes with Google Gemini, and delivers grounded answers via Groq.
+          <h2 className="empty-workspace-title">Research your documents</h2>
+          <p className="empty-workspace-desc">
+            Upload PDFs in the sidebar to extract verified context. All answers cite the exact source document and page number.
           </p>
-
-          <div className="features-grid">
-            <div className="feature-pill">
-              <FileSearch size={20} />
-              <strong>Exact Page Citations</strong>
-              <span>Every claim links to verified PDF document and page</span>
-            </div>
-            <div className="feature-pill">
-              <Layers size={20} />
-              <strong>FAISS Vector Store</strong>
-              <span>High-speed similarity indexing across multiple files</span>
-            </div>
-            <div className="feature-pill">
-              <MessageSquareQuote size={20} />
-              <strong>Follow-Up Memory</strong>
-              <span>Retains multi-turn conversation context naturally</span>
-            </div>
-          </div>
-
-          {/* Action or Suggested Inquiries */}
           {!hasDocuments ? (
-            <div style={{ marginTop: '16px' }}>
-              <button 
-                type="button" 
-                className="btn-primary" 
-                onClick={onOpenUpload}
-                style={{ padding: '12px 24px', fontSize: '0.9rem' }}
-              >
-                <UploadCloud size={18} />
-                <span>Upload Documents to Get Started</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              className="btn-primary btn-empty-cta"
+              onClick={onOpenUpload}
+            >
+              <UploadCloud size={14} />
+              <span>Upload PDFs to begin</span>
+            </button>
           ) : (
-            <div className="suggested-section">
-              <span>Suggested Inquiries</span>
-              <div className="suggested-buttons">
+            <div className="prompt-suggestions">
+              <span className="suggestions-label">Suggested inquiries</span>
+              <div className="suggestions-grid">
                 {sampleQuestions.map((q, idx) => (
                   <button
                     key={idx}
                     type="button"
-                    className="btn-suggested"
+                    className="prompt-chip"
                     onClick={() => onSelectSuggested(q)}
+                    title={`Ask: "${q}"`}
                   >
-                    <span>"{q}"</span>
-                    <ArrowRight size={14} style={{ opacity: 0.6 }} />
+                    <Sparkles size={11} className="prompt-chip-icon" />
+                    <span className="prompt-chip-text">{q}</span>
                   </button>
                 ))}
               </div>
@@ -97,24 +87,19 @@ export const ChatWindow = ({
           )}
         </div>
       ) : (
-        messages.map((msg, index) => (
-          <MessageBubble key={index} index={index} message={msg} />
-        ))
-      )}
-
-      {/* Typing indicator */}
-      {isLoading && (
-        <div className="message-row assistant">
-          <div className="avatar bot-avatar">
-            <CiteQuireIcon size={20} />
-          </div>
-          <div className="message-bubble typing-bubble">
-            <span className="typing-dot"></span>
-            <span className="typing-dot"></span>
-            <span className="typing-dot"></span>
-          </div>
+        <div className="messages-stream">
+          {messages.map((msg, index) => (
+            <MessageBubble
+              key={index}
+              index={index}
+              message={msg}
+              onFeedback={onFeedback}
+            />
+          ))}
         </div>
       )}
+
+      {isLoading && <ReadingSourcesIndicator />}
 
       <div ref={scrollEndRef} />
     </div>

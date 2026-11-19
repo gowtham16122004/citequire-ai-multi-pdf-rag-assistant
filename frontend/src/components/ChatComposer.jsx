@@ -1,64 +1,78 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, CornerDownLeft } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { ArrowUp } from 'lucide-react';
 
 export const ChatComposer = ({ onSendMessage, isLoading, disabled, placeholder }) => {
   const [input, setInput] = useState('');
   const textareaRef = useRef(null);
 
-  const handleSubmit = (e) => {
-    if (e) e.preventDefault();
-    if (!input.trim() || isLoading || disabled) return;
-    onSendMessage(input.trim());
-    setInput('');
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-    }
-  };
+  const canSend = input.trim().length > 0 && !isLoading && !disabled;
+
+  const handleSubmit = useCallback(
+    (e) => {
+      if (e) e.preventDefault();
+      if (!canSend) return;
+      onSendMessage(input.trim());
+      setInput('');
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
+    },
+    [canSend, input, onSendMessage]
+  );
 
   const handleKeyDown = (e) => {
+    // IME-safe: skip composition events
+    if (e.isComposing || e.nativeEvent?.isComposing) return;
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
     }
   };
 
-  // Auto resize textarea height
+  // Auto resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
     }
   }, [input]);
 
   return (
-    <div className="chat-composer-wrapper">
-      <form className="composer-box" onSubmit={handleSubmit}>
+    <div className="chat-composer-container">
+      <form className="composer-card" onSubmit={handleSubmit} noValidate>
         <textarea
           ref={textareaRef}
           rows={1}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder || "Ask a question across your indexed PDFs..."}
+          placeholder={
+            placeholder ||
+            (disabled
+              ? 'Upload PDF documents to begin…'
+              : 'Ask a question across your documents…')
+          }
           disabled={disabled || isLoading}
-          className="composer-input"
+          className="composer-textarea"
           aria-label="Ask a question across your indexed PDFs"
         />
 
-        <button
-          type="submit"
-          className="btn-primary"
-          style={{ width: '38px', height: '38px', padding: 0, borderRadius: 'var(--radius-md)' }}
-          disabled={!input.trim() || isLoading || disabled}
-          title="Send question (Enter)"
-          aria-label="Send message"
-        >
-          <Send size={16} />
-        </button>
+        <div className="composer-actions">
+          <button
+            type="submit"
+            className={`btn-send ${canSend ? 'btn-send--active' : ''}`}
+            disabled={!canSend}
+            title={canSend ? 'Send (Enter)' : 'Type a question first'}
+            aria-label="Send query"
+          >
+            <ArrowUp size={14} strokeWidth={2.5} />
+          </button>
+        </div>
       </form>
-      <span className="composer-hint">
-        CiteQuire grounds answers strictly in verified PDF context with exact page citations.
-      </span>
+
+      <div className="composer-footer-text">
+        <span>Answers grounded in verified PDF context with exact page citations.</span>
+      </div>
     </div>
   );
 };
